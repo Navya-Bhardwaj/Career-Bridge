@@ -8,14 +8,17 @@ import com.careerbridge.dto.UserRegistrationDTO;
 import com.careerbridge.mapper.UserMapper;
 import com.careerbridge.exception.EmailAlreadyExistsException;
 import com.careerbridge.exception.PhoneNumberAlreadyExistsException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 @Service
 public class UserServiceImpl implements UserService
 {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository)
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder)
     {
         this.userRepository = userRepository;
+        this.passwordEncoder= passwordEncoder;
     }
 
     @Override
@@ -30,6 +33,7 @@ public class UserServiceImpl implements UserService
             throw new PhoneNumberAlreadyExistsException("Phone number already exists");
         }
         User user= UserMapper.toEntity(userRegistrationDTO);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
