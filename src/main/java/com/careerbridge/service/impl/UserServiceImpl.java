@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import com.careerbridge.dto.UserRegistrationDTO;
 import com.careerbridge.mapper.UserMapper;
 import com.careerbridge.exception.EmailAlreadyExistsException;
-
+import com.careerbridge.exception.PhoneNumberAlreadyExistsException;
 @Service
 public class UserServiceImpl implements UserService
 {
@@ -24,6 +24,10 @@ public class UserServiceImpl implements UserService
         if (userRepository.existsByEmail( userRegistrationDTO.getEmail()))
         {
             throw new EmailAlreadyExistsException("Email already exists");
+        }
+        if (userRepository.existsByPhoneNumber( userRegistrationDTO.getPhoneNumber()))
+        {
+            throw new PhoneNumberAlreadyExistsException("Phone number already exists");
         }
         User user= UserMapper.toEntity(userRegistrationDTO);
         return userRepository.save(user);
