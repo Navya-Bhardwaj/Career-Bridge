@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import com.careerbridge.dto.ApiResponse;
 import java.time.LocalDateTime;
+import com.careerbridge.dto.LoginRequestDTO;
+import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
 @RequestMapping("/api/users")
@@ -29,6 +31,24 @@ public class UserController
                     .timestamp(LocalDateTime.now().toString())
                     .build();
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse> loginUser(@Valid @RequestBody LoginRequestDTO loginRequestDTO)
+    {
+        String token = userService.loginUser(loginRequestDTO);
+        ApiResponse response = ApiResponse.builder()
+                    .message("login sucessful")
+                    .status(HttpStatus.OK.value())
+                    .timestamp(LocalDateTime.now().toString())
+                    .token(token)
+                    .build();
+        
+        return ResponseEntity.ok(response);
+    }
+    @GetMapping("/test")
+    public ResponseEntity<String> test()
+    {
+        return ResponseEntity.ok("JWT authentication working!");
     }
 
 }
