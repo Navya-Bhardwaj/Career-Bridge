@@ -13,11 +13,12 @@ public class JwtService
 {
     @Value("${jwt.secret}")
     private String secretKey;
-    public String generateToken(String email)
+    public String generateToken(String email, String role)
     {
         SecretKey key= Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
         return Jwts.builder()
                 .subject(email)
+                .claim("role", role)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis()+1000*60*60))
                 .signWith(key)
@@ -31,6 +32,16 @@ public class JwtService
                 .build().parseSignedClaims(token)
                 .getPayload()
                 .getSubject();
+    }
+    public String extractRole(String token)
+    {
+        SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+        return Jwts.parser()
+                .verifyWith(key)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("role", String.class);
     }
 
 }

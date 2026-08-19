@@ -50,5 +50,6 @@ public class UserController
     {
         return ResponseEntity.ok("JWT authentication working!");
     }
+    
 
 }

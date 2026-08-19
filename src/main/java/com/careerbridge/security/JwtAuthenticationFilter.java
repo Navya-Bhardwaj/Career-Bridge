@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import com.careerbridge.security.JwtService;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter 
 {
@@ -30,9 +31,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter
                     return;
                 }
                 String token = authHeader.substring(7);
+                try{
                 String email = jwtService.extractEmail(token);
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken( email, null, java.util.Collections.emptyList());
+                String role = jwtService.extractRole(token);
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken( email, null, java.util.Collections.singletonList( new SimpleGrantedAuthority("ROLE_" + role)));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+                } 
+                catch( Exception e)
+                {
+                    SecurityContextHolder.clearContext();
+                }
+                
                 filterChain.doFilter(request, response);
 
             }
